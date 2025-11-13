@@ -1,0 +1,49 @@
+name: Build and Release Docker Image
+
+on:
+  push:
+    tags:
+      - 'v*'   # 当你推送 tag（如 v1.0.0）时触发
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 登录到 Docker Hub（推荐）或 GHCR（都行）
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract version from tag
+        id: vars
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/netease_url:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/netease_url:${{ env.VERSION }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ env.VERSION }}
+          tag_name: ${{ env.VERSION }}
+          body: |
+            🚀 **自动发布版本：** `${{ env.VERSION }}`
+            包含自动构建的 Docker 镜像：
+            - `${{ secrets.DOCKERHUB_USERNAME }}/netease_url:latest`
+            - `${{ secrets.DOCKERHUB_USERNAME }}/netease_url:${{ env.VERSION }}`
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
