@@ -360,17 +360,11 @@ MUSIC_U=你的MUSIC_U值;os=pc;appver=8.9.70;
 ### 或直接使用Docker run
 
 ```bash
-# Windows 系统（注意路径用正斜杠）
-docker run -d --name netease-url \
-  -p 5000:5000 \
-  -v C:/Users/dxggo/Desktop/test/cookie.txt:/app/cookie.txt \  # 本地文件路径:容器内文件路径
-  dxggofficial/netease_url:latest
+# Windows 系统
+docker run -d --name netease-url -p 5000:5000 -v C:/Users/dxggo/Desktop/test/cookie.txt:/app/cookie.txt dxggofficial/netease_url:latest
 
 # Linux/Mac 系统
-docker run -d --name netease-url \
-  -p 5000:5000 \
-  -v $(pwd)/cookie.txt:/app/cookie.txt \  # $(pwd) 表示当前目录
-  dxggofficial/netease_url:latest
+docker run -d --name netease-url -p 5000:5000 -v $(pwd)/cookie.txt:/app/cookie.txt dxggofficial/netease_url:latest
 ```
 
 ## ⚙️ 配置说明
